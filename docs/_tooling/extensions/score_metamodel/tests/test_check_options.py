@@ -11,7 +11,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 
+from unittest.mock import Mock
+
 import pytest
+from sphinx.application import Sphinx
 from sphinx_needs.data import NeedsInfoType
 
 from docs._tooling.extensions.score_metamodel.checks.check_options import (
@@ -72,9 +75,9 @@ class TestCheckOptions:
         )
 
         logger = fake_check_logger()
-
+        app = Mock(spec=Sphinx)
         # Expect that the checks pass
-        check_options(need, logger, self.NEED_TYPE_INFO)
+        check_options(app, need, logger, self.NEED_TYPE_INFO)
         logger.assert_no_warnings()
 
     def test_known_directive_with_optional_and_mandatory_option_and_allowed_value(self):
@@ -110,9 +113,10 @@ class TestCheckOptions:
         )
 
         logger = fake_check_logger()
+        app = Mock(spec=Sphinx)
 
         # Expect that the checks pass
-        check_options(need, logger, self.NEED_TYPE_INFO)
+        check_options(app, need, logger, self.NEED_TYPE_INFO)
         logger.assert_warning(
             f'with type `{need["type"]}`: no type info defined for semantic check.',
             expect_location=False,
@@ -131,9 +135,10 @@ class TestCheckOptions:
         )
 
         logger = fake_check_logger()
+        app = Mock(spec=Sphinx)
 
         # Expect that the checks pass
-        check_extra_options(need, logger, self.NEED_TYPE_INFO)
+        check_extra_options(app, need, logger, self.NEED_TYPE_INFO)
         logger.assert_warning(
             "has these extra options: `other_option`.",
             expect_location=False,
@@ -153,9 +158,10 @@ class TestCheckOptions:
         )
 
         logger = fake_check_logger()
+        app = Mock(spec=Sphinx)
 
         # Expect that the checks pass
-        check_extra_options(need, logger, self.NEED_TYPE_INFO_WITH_OPT_OPT)
+        check_extra_options(app, need, logger, self.NEED_TYPE_INFO_WITH_OPT_OPT)
 
         logger.assert_warning(
             "has these extra options: `other_option`.",
@@ -173,9 +179,10 @@ class TestCheckOptions:
         )
 
         logger = fake_check_logger()
+        app = Mock(spec=Sphinx)
 
         # Expect that the checks fail and a warning is logged
-        check_options(need, logger, self.NEED_TYPE_INFO)
+        check_options(app, need, logger, self.NEED_TYPE_INFO)
         logger.assert_warning(
             "is missing required option: `some_required_option`.",
             expect_location=False,
@@ -193,9 +200,10 @@ class TestCheckOptions:
         )
 
         logger = fake_check_logger()
+        app = Mock(spec=Sphinx)
 
         # Expect that the checks fail and a warning is logged
-        check_options(need, logger, self.NEED_TYPE_INFO)
+        check_options(app, need, logger, self.NEED_TYPE_INFO)
         logger.assert_warning(
             f'does not follow pattern `{self.NEED_TYPE_INFO[0]["req_opt"][1][1]}`.',
             expect_location=False,
@@ -214,9 +222,10 @@ class TestCheckOptions:
         )
 
         logger = fake_check_logger()
+        app = Mock(spec=Sphinx)
 
         # Expect that the checks fail and a warning is logged
-        check_options(need, logger, self.NEED_TYPE_INFO_WITH_OPT_OPT)
+        check_options(app, need, logger, self.NEED_TYPE_INFO_WITH_OPT_OPT)
         logger.assert_warning(
             f'does not follow pattern `{self.NEED_TYPE_INFO_WITH_OPT_OPT[0]["opt_opt"][0][1]}`.',
             expect_location=False,

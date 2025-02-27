@@ -10,6 +10,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
+from unittest.mock import Mock
+
+from sphinx.application import Sphinx
 from sphinx_needs.data import NeedsInfoType
 
 from docs._tooling.extensions.score_metamodel.checks.id_format_and_length import (
@@ -33,8 +36,9 @@ class TestId:
         )
 
         logger = fake_check_logger()
+        app = Mock(spec=Sphinx)
 
-        check_id_format(need, logger)
+        check_id_format(app, need, logger)
         assert not logger.has_warnings
 
     def test_check_id_format_two_mendatory_substrings_parts_negative(self):
@@ -47,8 +51,9 @@ class TestId:
         )
 
         logger = fake_check_logger()
+        app = Mock(spec=Sphinx)
 
-        check_id_format(need, logger)
+        check_id_format(app, need, logger)
 
         verify_log_string(
             logger,
@@ -66,8 +71,9 @@ class TestId:
         )
 
         logger = fake_check_logger()
+        app = Mock(spec=Sphinx)
 
-        check_id_format(need, logger)
+        check_id_format(app, need, logger)
 
         verify_log_string(
             logger,
@@ -85,8 +91,9 @@ class TestId:
         )
 
         logger = fake_check_logger()
+        app = Mock(spec=Sphinx)
 
-        check_id_length(need, logger)
+        check_id_length(app, need, logger)
         assert not logger.has_warnings
 
     def test_check_id_length_negative(self):
@@ -95,14 +102,15 @@ class TestId:
         """
 
         need = NeedsInfoType(
-            id="std_req__iso26262__rq_8_6432_00000000000",
+            id="std_req__iso26262__rq_8_6432_0000000000000000000000",
         )
 
         logger = fake_check_logger()
+        app = Mock(spec=Sphinx)
 
-        check_id_length(need, logger)
+        check_id_length(app, need, logger)
         verify_log_string(
             logger,
-            f'exceeds the maximum allowed length of 40 characters (current length: {len(need['id'])}).',
+            f'exceeds the maximum allowed length of 45 characters (current length: {len(need['id'])}).',
             expect_location=False,
         )
