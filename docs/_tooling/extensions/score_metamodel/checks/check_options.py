@@ -30,6 +30,12 @@ def get_need_type(needs_types: list[NeedsInfoType], directive: str):
     raise ValueError(f"Need type {directive} not found in needs_types")
 
 
+# req-Id: gd_req__req__attr_type
+# req-Id: gd_req__requirements_attr_security
+# req-Id: gd_req__req__attr_safety
+# req-Id: gd_req__req__attr_status
+# req-Id: gd_req__req__attr_rationale
+# req-Id: gd_req__req__attr_mandatory
 @local_check
 def check_options(
     app: Sphinx,
@@ -101,6 +107,23 @@ def check_options(
             if values is None or values in [[], ""]:
                 msg = f"is missing required link: `{link}`."
                 log.warning_for_need(need, msg)
+                continue
+
+            if not isinstance(values, list):
+                values = [values]
+
+            for value in values:
+                assert isinstance(value, str)
+                regex = re.compile(pattern)
+                if not regex.match(value):
+                    msg = f"does not follow pattern `{pattern}`."
+                    log.warning_for_option(need, link, msg)
+
+    optional_links: list[tuple[str, str]] = need_options.get("opt_link", [])
+    if optional_links:
+        for link, pattern in optional_links:
+            values = need.get(link, None)
+            if values is None or values in [[], ""]:
                 continue
 
             if not isinstance(values, list):

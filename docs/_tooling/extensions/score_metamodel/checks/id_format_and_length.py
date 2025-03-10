@@ -10,7 +10,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-import os
 
 from sphinx.application import Sphinx
 from sphinx_needs.data import NeedsInfoType
@@ -18,6 +17,7 @@ from sphinx_needs.data import NeedsInfoType
 from score_metamodel import CheckLogger, local_check
 
 
+# req-Id: gd_req__req__attr_uid
 @local_check
 def check_id_format(app: Sphinx, need: NeedsInfoType, log: CheckLogger):
     """
@@ -50,3 +50,45 @@ def check_id_length(app: Sphinx, need: NeedsInfoType, log: CheckLogger):
     if len(need["id"]) > 45:
         msg = f"exceeds the maximum allowed length of 45 characters (current length: {len(need['id'])})."
         log.warning_for_option(need, "id", msg)
+
+
+# req-Id: gd_req__requirements_attr_title
+@local_check
+def check_id_title_summary(app: Sphinx, need: NeedsInfoType, log: CheckLogger):
+    """
+    Ensures that the requirement ID does not contain prohibited words such as 'shall'.
+    This helps enforce clear and concise naming conventions.
+    ---
+    """
+    stop_words = ["shall"]  # to update the list later
+    for word in stop_words:
+        if word in need["id"]:
+            msg = f"contains a prohibited word: `{word}`. Please revise the ID."
+            log.warning_for_option(need, "id", msg)
+            break
+
+
+# req-Id: gd_req__req__attr_desc_weak
+@local_check
+def check_description(app: Sphinx, need: NeedsInfoType, log: CheckLogger):
+    """
+    Ensures that the requirement Description does not contain weak words such as 'just',
+    'that' or'about' as an example
+    This helps enforce strong, clear, and unambiguous requirement phrasing
+    ---
+    """
+    weak_words = [
+        "just",
+        "that",
+        "about",
+        "really",
+        "some",
+        "thing",
+        "absolutely",
+    ]  # to update the list later
+    if need["description"]:
+        for word in weak_words:
+            if word in need["description"]:
+                msg = f"contains a weak word: `{word}`. Please revise the description."
+                log.warning_for_option(need, "description", msg)
+                break
